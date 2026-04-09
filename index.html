@@ -126,7 +126,7 @@
     .next-button { background: #6ea3d2; }
     .center-button-wrap {
       text-align: center;
-      margin: 18px 0;
+      margin: 18px 0 8px;
     }
     .judge-button {
       background: #6ea3d2;
@@ -139,26 +139,11 @@
       opacity: 0.55;
       cursor: not-allowed;
     }
-    .status-bar {
-      width: 100%;
-      height: 44px;
-      background: #fff;
-      border: 3px solid #9e9e9e;
-      border-radius: 8px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      overflow: hidden;
-      margin-bottom: 18px;
-    }
-    .status-cell {
-      border-right: 1px solid #bdbdbd;
-    }
-    .status-cell:last-child { border-right: none; }
     .section-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 10px 0;
+      margin: 4px 0 8px;
       font-size: 14px;
       font-weight: 700;
     }
@@ -305,13 +290,13 @@
       .nav-button { min-width: 96px; padding: 11px 14px; font-size: 15px; }
       .question-grid { grid-template-columns: repeat(3, minmax(78px, 1fr)); gap: 6px; }
       .q-tile { min-height: 38px; font-size: 13px; padding: 9px 10px; }
-      .status-bar { height: 36px; margin-bottom: 14px; }
-      .section-head { font-size: 13px; }
+      .section-head { font-size: 13px; margin: 2px 0 6px; }
       .result-type { font-size: 24px; }
       .result-text { font-size: 15px; line-height: 1.85; }
       .result-summary { font-size: 12px; }
       .line-button, .restart-button { min-width: 100%; width: 100%; }
       .footer { height: 50px; font-size: 10px; }
+      .center-button-wrap { margin: 12px 0 4px; }
     }
   </style>
 </head>
@@ -348,17 +333,14 @@
         <div class="center-button-wrap">
           <button class="judge-button" type="button" disabled>☑ 全問一括判定</button>
         </div>
-        <div class="status-bar">
-          <div class="status-cell"></div>
-          <div class="status-cell"></div>
-          <div class="status-cell"></div>
-        </div>
+
         <div class="section-head">
           <span>問題一覧</span>
           <span id="remainingCountLabel">判定残り 0 問</span>
         </div>
         <div id="confirmQuestionGrid" class="question-grid"></div>
-        <div class="card" style="margin-top:18px;">
+
+        <div class="card" style="margin-top:8px;">
           <div class="result-type" style="font-size:28px; color:#5f7f99;">回答内容の確認</div>
           <div id="confirmMessage" class="result-text" style="text-align:center;"></div>
           <div id="confirmSummary" class="result-summary" style="margin-top:20px;"></div>
@@ -412,7 +394,6 @@
       '空気が重い・どんより感じる場所がある'
     ];
 
-    // 正答: Q1-Q8 は はい, Q9 は いいえ
     const correctAnswers = [true, true, true, true, true, true, true, true, false];
 
     const fixedResultBodyHtml = `5つ以上当てはまる方へ
