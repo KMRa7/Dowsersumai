@@ -292,7 +292,7 @@
       <section id="introScreen" class="screen active">
         <div class="card" style="margin-top:18px;">
           <div class="intro-title">今いる場所、<br>「なんとなく気になること」はありませんか？</div>
-          <div class="intro-sub">当てはまるものにチェックしてみてください<br><br>未回答があっても最後に判定画面へ進めます。</div>
+          <div class="intro-sub">Q1〜Q9はすべて回答必須です。<br><br>各設問で「はい」または「いいえ」を選んで進んでください。</div>
           <div class="start-wrap">
             <button id="startButton" class="start-button" type="button">開始する</button>
           </div>
@@ -500,6 +500,25 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     const confirmQuestionGrid = document.getElementById('confirmQuestionGrid');
     const remainingCountLabel = document.getElementById('remainingCountLabel');
 
+    function getUnansweredIndexes() {
+      return answers
+        .map((answer, index) => answer === null ? index + 1 : null)
+        .filter((item) => item !== null);
+    }
+
+    function getUnansweredLabel() {
+      const unanswered = getUnansweredIndexes();
+      return unanswered.map((num) => 'Q' + num).join('、');
+    }
+
+    function showRequiredAlert(prefix = 'Q1〜Q9はすべて回答必須です。') {
+      const unansweredLabel = getUnansweredLabel();
+      const message = unansweredLabel
+        ? prefix + '\n未回答：' + unansweredLabel
+        : prefix;
+      alert(message);
+    }
+
     function showScreen(screen) {
       [introScreen, questionScreen, confirmScreen, loadingScreen, resultScreen].forEach((el) => el.classList.remove('active'));
       screen.classList.add('active');
@@ -524,7 +543,7 @@ https://www.j-dowsing.com/attendance/case_studies/`;
       answers.forEach((answer, index) => {
         if (answer !== null) answeredCount += 1;
         if (answer === true) yesCount += 1;
-        if (answer !== null && answer === correctAnswers[index]) correctCount += 1;
+        if (answer === correctAnswers[index]) correctCount += 1;
       });
 
       const totalQuestions = questions.length;
@@ -544,7 +563,11 @@ https://www.j-dowsing.com/attendance/case_studies/`;
       yesButton.className = 'answer-button' + (answers[currentIndex] === true ? ' selected-yes' : '');
       noButton.className = 'answer-button' + (answers[currentIndex] === false ? ' selected-no' : '');
       prevButton.disabled = currentIndex === 0;
+
+      const isAnswered = answers[currentIndex] !== null;
+      nextButton.disabled = !isAnswered;
       nextButton.textContent = currentIndex === questions.length - 1 ? '判定画面へ' : '次へ';
+
       footerProgress.textContent = (currentIndex + 1) + ' / 9';
     }
 
@@ -572,11 +595,8 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     }
 
     function fillConfirmScreen() {
-      const unansweredCount = answers.filter((item) => item === null).length;
-      remainingCountLabel.textContent = '判定残り ' + unansweredCount + ' 問';
-      confirmMessage.textContent = unansweredCount > 0
-        ? '未回答の設問が ' + unansweredCount + ' 件あります。\nこのまま判定に進みますか？'
-        : 'すべての設問に回答済みです。\nこの内容で判定に進みますか？';
+      remainingCountLabel.textContent = '判定残り 0 問';
+      confirmMessage.textContent = 'すべての設問に回答済みです。\nこの内容で判定に進みますか？';
       const answerLines = buildAnswerLines();
       confirmSummary.textContent = '回答内容\n' + answerLines.join('\n');
       buildAnsweredGrid(confirmQuestionGrid);
@@ -609,6 +629,11 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     }
 
     function startJudgeFlow() {
+      const hasUnanswered = answers.some((item) => item === null);
+      if (hasUnanswered) {
+        showRequiredAlert('Q1〜Q9はすべて回答必須です。');
+        return;
+      }
       fillConfirmScreen();
       showScreen(confirmScreen);
     }
@@ -667,6 +692,10 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     });
 
     nextButton.addEventListener('click', () => {
+      if (answers[currentIndex] === null) {
+        showRequiredAlert('この設問は回答必須です。');
+        return;
+      }
       if (currentIndex === questions.length - 1) {
         startJudgeFlow();
         return;
@@ -718,6 +747,11 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     });
 
     document.getElementById('footerListButton').addEventListener('click', () => {
+      const hasUnanswered = answers.some((item) => item === null);
+      if (hasUnanswered) {
+        showRequiredAlert('Q1〜Q9はすべて回答必須です。未回答の設問があります。');
+        return;
+      }
       fillConfirmScreen();
       showScreen(confirmScreen);
       window.scrollTo({ top: 0, behavior: 'smooth' });
