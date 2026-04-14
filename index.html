@@ -199,16 +199,6 @@
     .result-text .result-link:visited {
       color: #1a73e8;
     }
-    .result-summary {
-      margin: 26px auto 0;
-      max-width: 820px;
-      padding-top: 18px;
-      border-top: 1px dashed #c8c8c8;
-      white-space: pre-line;
-      font-size: 13px;
-      line-height: 1.8;
-      color: #666;
-    }
     .result-actions {
       margin-top: 28px;
       display: flex;
@@ -279,7 +269,6 @@
       .section-head { font-size: 13px; margin: 2px 0 6px; }
       .result-type { font-size: 24px; }
       .result-text { font-size: 15px; line-height: 1.85; }
-      .result-summary { font-size: 12px; }
       .line-button, .restart-button { min-width: 100%; width: 100%; }
       .footer { height: 50px; font-size: 10px; }
     }
@@ -324,7 +313,6 @@
         <div class="card" style="margin-top:8px;">
           <div class="result-type" style="font-size:28px; color:#5f7f99;">回答内容の確認</div>
           <div id="confirmMessage" class="result-text" style="text-align:center;"></div>
-          <div id="confirmSummary" class="result-summary" style="margin-top:20px;"></div>
           <div class="result-actions">
             <button id="confirmJudgeButton" class="line-button" type="button" style="background:#6ea3d2;">この内容で判定する</button>
             <button id="backToQuestionsButton" class="restart-button" type="button">設問に戻る</button>
@@ -343,7 +331,6 @@
         <div class="card" style="margin-top:18px;">
           <div id="resultType" class="result-type"></div>
           <div id="resultText" class="result-text"></div>
-          <div id="resultSummary" class="result-summary"></div>
           <div class="result-actions">
             <button id="sendButton" class="line-button" type="button">LINEに送る</button>
             <button id="restartButton" class="restart-button" type="button">最初からやり直す</button>
@@ -495,9 +482,7 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     const nextButton = document.getElementById('nextButton');
     const resultType = document.getElementById('resultType');
     const resultText = document.getElementById('resultText');
-    const resultSummary = document.getElementById('resultSummary');
     const confirmMessage = document.getElementById('confirmMessage');
-    const confirmSummary = document.getElementById('confirmSummary');
     const confirmQuestionGrid = document.getElementById('confirmQuestionGrid');
     const remainingCountLabel = document.getElementById('remainingCountLabel');
 
@@ -524,16 +509,6 @@ https://www.j-dowsing.com/attendance/case_studies/`;
       [introScreen, questionScreen, confirmScreen, loadingScreen, resultScreen].forEach((el) => el.classList.remove('active'));
       screen.classList.add('active');
       footerProgress.textContent = screen === questionScreen ? (currentIndex + 1) + ' / 9' : '- / 9';
-    }
-
-    function buildAnswerLabel(index) {
-      if (answers[index] === true) return 'はい';
-      if (answers[index] === false) return 'いいえ';
-      return '未回答';
-    }
-
-    function buildAnswerLines() {
-      return questions.map((q, i) => 'Q' + (i + 1) + '：' + buildAnswerLabel(i) + ' / ' + q);
     }
 
     function calculateResults() {
@@ -598,14 +573,11 @@ https://www.j-dowsing.com/attendance/case_studies/`;
     function fillConfirmScreen() {
       remainingCountLabel.textContent = '判定残り 0 問';
       confirmMessage.textContent = 'すべての設問に回答済みです。\nこの内容で判定に進みますか？';
-      const answerLines = buildAnswerLines();
-      confirmSummary.textContent = '回答内容\n' + answerLines.join('\n');
       buildAnsweredGrid(confirmQuestionGrid);
     }
 
     function judgeResult() {
       const result = calculateResults();
-      const answerLines = buildAnswerLines();
 
       resultType.textContent = '【要チェック】';
 
@@ -614,17 +586,11 @@ https://www.j-dowsing.com/attendance/case_studies/`;
 
       resultText.innerHTML = headerHtml + fixedResultBodyHtml.replace(/\n/g, '<br>');
 
-      resultSummary.textContent =
-        '回答一覧\n' + answerLines.join('\n') +
-        '\n\n「はい」の数：' + result.yesCount + '件' +
-        '\n回答済み：' + result.answeredCount + '/' + result.totalQuestions + '問';
-
       latestMessage =
         '≪住まいの健康チェック≫\n' +
         '【要チェック】\n' +
         '正答率：' + result.accuracyRate + '%（' + result.correctCount + '/' + result.totalQuestions + '問正解）\n\n' +
         fixedResultBodyText +
-        '\n\n【回答一覧】\n' + answerLines.join('\n') +
         '\n\n「はい」の数：' + result.yesCount + '件' +
         '\n回答済み：' + result.answeredCount + '/' + result.totalQuestions + '問';
     }
