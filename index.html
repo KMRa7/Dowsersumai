@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>敏感者判定テスト</title>
+  <title>住まいの感覚チェック</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans JP", sans-serif;
@@ -68,53 +68,35 @@
       line-height: 1.6;
     }
 
-    .question-list {
+    .check-list {
       display: grid;
-      gap: 14px;
+      gap: 10px;
       margin-bottom: 18px;
     }
 
-    .question-item {
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
       background: #fafafa;
       border: 1px solid #e4e4e4;
       border-radius: 14px;
-      padding: 14px;
-    }
-
-    .question-text {
-      margin: 0 0 10px;
-      font-size: 14px;
-      line-height: 1.7;
-      font-weight: 700;
-    }
-
-    .answer-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .answer-option {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-height: 42px;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      border-radius: 999px;
-      background: #fff;
-      font-size: 14px;
+      padding: 13px 14px;
       cursor: pointer;
       transition: 0.2s ease;
-      box-sizing: border-box;
+      font-size: 14px;
+      line-height: 1.7;
     }
 
-    .answer-option input {
-      display: none;
+    .check-item input {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+      accent-color: #5ba98d;
+      flex: 0 0 auto;
     }
 
-    .answer-option.selected {
+    .check-item.selected {
       border-color: #5ba98d;
       background: #f2faf6;
       box-shadow: 0 0 0 1px rgba(91, 169, 141, 0.15);
@@ -122,7 +104,7 @@
     }
 
     .submit-button,
-    .back-button {
+    .send-button {
       width: 100%;
       border: none;
       border-radius: 999px;
@@ -138,7 +120,7 @@
       background: #df6b7b;
     }
 
-    .back-button {
+    .send-button {
       background: #5ba98d;
       margin-top: 18px;
     }
@@ -171,8 +153,8 @@
       font-weight: 600;
     }
 
-    .result-box,
-    .answers-box {
+    .answers-box,
+    .result-box {
       padding: 16px 14px;
       border-radius: 14px;
       background: #f7fbf9;
@@ -182,7 +164,7 @@
 
     .result-title {
       margin: 0 0 10px;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       color: #356b57;
       line-height: 1.5;
@@ -197,21 +179,24 @@
 
     .selected-answer-list {
       margin: 0;
-      padding-left: 18px;
+      padding-left: 20px;
       font-size: 13px;
       line-height: 1.9;
     }
 
-    .selected-answer-list strong {
-      color: #356b57;
+    .empty-text {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.7;
     }
 
-    .helper {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #666;
+    .count-text {
+      margin: 12px 0 0;
       text-align: center;
-      line-height: 1.6;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.7;
     }
 
     @keyframes spin {
@@ -224,12 +209,7 @@
         font-size: 22px;
       }
 
-      .answer-group {
-        grid-template-columns: 1fr;
-      }
-
-      .question-text,
-      .answer-option,
+      .check-item,
       .result-description {
         font-size: 13px;
       }
@@ -239,31 +219,34 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>敏感者判定テスト</h1>
+      <h1>住まいの感覚チェック</h1>
     </div>
 
     <div id="questionScreen" class="screen active">
-      <div class="intro">下記の質問に直感で答えてください。
-回答後、あなたの敏感度を確認できます。</div>
+      <div class="intro">今いる場所、
+「なんとなく気になること」はありませんか？
 
-      <div class="section-label">【敏感者判定テスト】</div>
+当てはまるものにチェックしてみてください</div>
 
-      <form id="sensitiveForm">
-        <div class="question-list" id="questionList"></div>
-        <button id="diagnoseButton" class="submit-button" type="button">あなたの敏感度を見てみる</button>
+      <div class="section-label">🌿【住まいの感覚チェック】</div>
+
+      <form id="senseForm">
+        <div id="checkList" class="check-list"></div>
+        <button id="checkButton" class="submit-button" type="button">感覚チェックをする</button>
       </form>
     </div>
 
     <div id="loadingScreen" class="screen loading-screen">
       <div class="spinner"></div>
-      <div class="loading-text">判定中...</div>
+      <div class="loading-text">チェック中...</div>
     </div>
 
     <div id="resultScreen" class="screen">
       <div class="answers-box">
         <p class="result-title">あなたの回答</p>
         <ol id="selectedAnswerList" class="selected-answer-list"></ol>
-        
+        <p id="emptySelectedText" class="empty-text">チェックされた項目はありません。</p>
+        <p id="countText" class="count-text"></p>
       </div>
 
       <div class="result-box">
@@ -271,53 +254,43 @@
         <div id="resultDescription" class="result-description"></div>
       </div>
 
-       <button id="sendButton" class="back-button" type="button">LINEに送る</button></button>
+      <button id="sendButton" class="send-button" type="button">LINEに送る</button>
     </div>
   </div>
 
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
   <script>
-    const questions = [
-      { text: '黄色と青色はどちらが好き？', answers: [{ label: '黄色', isTarget: false }, { label: '青色', isTarget: true }] },
-      { text: '鏡をみるのは好き？？', answers: [{ label: '好き', isTarget: false }, { label: '嫌い', isTarget: true }] },
-      { text: '人と握手するとき、自分から手を出す？', answers: [{ label: '手を出す', isTarget: false }, { label: '手を出さない', isTarget: true }] },
-      { text: '野菜料理と肉料理、どちらが好き？', answers: [{ label: '野菜料理', isTarget: true }, { label: '肉料理', isTarget: false }] },
-      { text: '温かい料理と冷たい料理、どちらが好き？', answers: [{ label: '温かい料理', isTarget: false }, { label: '冷たい料理', isTarget: true }] },
-      { text: '寝る時、右と左どちらを下にすると安眠できる？', answers: [{ label: '右', isTarget: false }, { label: '左', isTarget: true }] },
-      { text: 'ピアノを弾いた時（または近くに行った時）、気分が悪くなったこと', answers: [{ label: 'ある', isTarget: true }, { label: 'ない', isTarget: false }] },
-      { text: '時々片頭痛になる？', answers: [{ label: '起きる', isTarget: true }, { label: '起きない', isTarget: false }] },
-      { text: '人が多いところと、少ないところ、どちらが好き？', answers: [{ label: '多いところ', isTarget: false }, { label: '少ないところ', isTarget: true }] },
-      { text: 'じっとしているのと、行動的に動き回るのはどちらが好き？', answers: [{ label: 'じっとしている', isTarget: false }, { label: '行動的に回る', isTarget: true }] },
-      { text: '太陽の光と月の光どちらが心地良く感じる？', answers: [{ label: '太陽の光', isTarget: true }, { label: '月の光', isTarget: false }] },
-      { text: 'イライラしやすい？', answers: [{ label: 'しやすい', isTarget: false }, { label: 'しにくい', isTarget: true }] },
-      { text: '甘いものと酸っぱいもの、どちらが好き？', answers: [{ label: '甘いもの', isTarget: false }, { label: '酸っぱいもの', isTarget: true }] },
-      { text: '朝、布団や毛布を跳ね除けている事が多い？', answers: [{ label: '多い', isTarget: true }, { label: '少ない', isTarget: false }] },
-      { text: '暗闇で色々な物が光って見える事がある？', answers: [{ label: 'ある', isTarget: true }, { label: 'ない', isTarget: false }] }
+    const checkItems = [
+      '家のまわりで、同じ場所に虫の巣をよく見かける',
+      'なぜか猫がよく集まる場所がある',
+      '夜中（1時〜3時）にふと目が覚めることがある',
+      'しっかり寝たはずなのに、疲れが残ることがある',
+      '寝つきが悪いと感じることがある',
+      '引っ越しや部屋を変えてから、体調の変化を感じたことがある',
+      '植物が育ちにくい、または元気がなくなりやすい',
+      '食べ物が傷みやすいと感じることがある',
+      '空気が重い・どんより感じる場所がある'
     ];
 
-    const sensitiveResultText = `これは、特別な能力というよりも、
-”感じ取る幅が広い状態”です。
+    const resultTextForFiveOrMore = `あなたは少しだけ
+住まいの影響を受けている可能性があります
 
-人よりも多くの情報を受け取れる分、
+気になる方は、
+一度しっかり整えてみるのもおすすめです
 
 ・疲れやすい
-・影響を受けやすい
-・理由のない違和感を感じやすい
+・気分がスッキリしない
+・イライラしやすい
 
-といった状態にもなりやすいのが特徴です。
+といった状態になりやすいのが特徴です。
 
-ですがこれは、問題ではありません。
+ですがこれは、
+問題ではありません。
 
-感覚は、整えるものです。
+住まいは、
+整えられるものです。
 
-そしてその感覚は、
-
-・空間
-・人
-・場の状態
-
-とも深く関係しています。
-
-もし、
+また、
 
 ・場所によって体調が変わる
 ・特定の空間で疲れやすい
@@ -325,24 +298,28 @@
 と感じることがある場合は、
 
 それは「あなたの問題」ではなく
-空間との関係性かもしれません。`;
+空間との関係性かもしれません。
 
-    const pendingText = `現在、判定対象の選択が6個以下の場合の表示内容は未設定です。
-設定内容が決まり次第、ここに表示できます。`;
+気になる方は、
+一度しっかり整えてみるのもおすすめです。`;
+
+    const pendingText = `チェックが4つ以下の場合の表示内容は、現在まだ未設定です。`;
+
+    const questionScreen = document.getElementById('questionScreen');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const checkList = document.getElementById('checkList');
+    const checkButton = document.getElementById('checkButton');
+    const sendButton = document.getElementById('sendButton');
+    const selectedAnswerList = document.getElementById('selectedAnswerList');
+    const emptySelectedText = document.getElementById('emptySelectedText');
+    const countText = document.getElementById('countText');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDescription = document.getElementById('resultDescription');
 
     const LIFF_ID = '2009756046-LGSv8mSu';
     let latestMessage = '';
     let liffReady = false;
-
-    const questionList = document.getElementById('questionList');
-    const diagnoseButton = document.getElementById('diagnoseButton');
-    const sendButton = document.getElementById('sendButton');
-    const questionScreen = document.getElementById('questionScreen');
-    const loadingScreen = document.getElementById('loadingScreen');
-    const resultScreen = document.getElementById('resultScreen');
-    const selectedAnswerList = document.getElementById('selectedAnswerList');
-    const resultTitle = document.getElementById('resultTitle');
-    const resultDescription = document.getElementById('resultDescription');
 
     function showScreen(screen) {
       questionScreen.classList.remove('active');
@@ -352,83 +329,74 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function renderQuestions() {
-      questionList.innerHTML = questions.map((question, questionIndex) => {
-        const number = questionIndex + 1;
-        const answerHtml = question.answers.map((answer) => {
-          return `
-            <label class="answer-option">
-              <input
-                type="radio"
-                name="q${questionIndex}"
-                value="${answer.label}"
-                data-is-target="${answer.isTarget ? 'true' : 'false'}"
-              />
-              <span>${answer.label}</span>
-            </label>
-          `;
-        }).join('');
-
+    function renderCheckItems() {
+      checkList.innerHTML = checkItems.map((item) => {
         return `
-          <div class="question-item">
-            <p class="question-text">${number}. Q. ${question.text}</p>
-            <div class="answer-group">${answerHtml}</div>
-          </div>
+          <label class="check-item">
+            <input type="checkbox" name="senseCheck" value="${item}" />
+            <span>${item}</span>
+          </label>
         `;
       }).join('');
     }
 
     function syncSelectedStyles() {
-      document.querySelectorAll('.answer-option').forEach((label) => {
+      document.querySelectorAll('.check-item').forEach((label) => {
         const input = label.querySelector('input');
         label.classList.toggle('selected', input.checked);
       });
     }
 
-    function getSelectedAnswers() {
-      return questions.map((question, index) => {
-        const selected = document.querySelector(`input[name="q${index}"]:checked`);
-        if (!selected) return null;
-
-        return {
-          questionNumber: index + 1,
-          questionText: question.text,
-          answer: selected.value,
-          isTarget: selected.getAttribute('data-is-target') === 'true'
-        };
-      }).filter(Boolean);
+    function getSelectedItems() {
+      return Array.from(document.querySelectorAll('input[name="senseCheck"]:checked'))
+        .map((input) => input.value);
     }
 
-    function renderResult(selectedAnswers) {
-      const targetCount = selectedAnswers.filter((item) => item.isTarget).length;
+    function renderResult(selectedItems) {
+      const selectedCount = selectedItems.length;
 
-      selectedAnswerList.innerHTML = selectedAnswers.map((item) => {
-        return `<li>Q. ${item.questionText}<br>A. ${item.answer}</li>`;
-      }).join('');
+      selectedAnswerList.innerHTML = selectedItems
+        .map((item) => `<li>${item}</li>`)
+        .join('');
 
-      if (targetCount >= 7) {
-        resultTitle.textContent = '「敏感者」の傾向があります。';
-        resultDescription.textContent = sensitiveResultText;
+      emptySelectedText.style.display = selectedCount === 0 ? 'block' : 'none';
+      countText.textContent = `チェック数：${selectedCount}個`;
+
+      if (selectedCount >= 5) {
+        resultTitle.textContent = 'チェック結果';
+        resultDescription.textContent = resultTextForFiveOrMore;
       } else {
-        resultTitle.textContent = '判定結果は準備中です。';
+        resultTitle.textContent = 'チェック結果は準備中です。';
         resultDescription.textContent = pendingText;
       }
 
-      const selectedText = selectedAnswers
-        .map((item) => `・Q. ${item.questionText}
-　A. ${item.answer}`)
-        .join('
-');
+      const selectedText = selectedItems.length > 0
+        ? selectedItems.map((item) => `・${item}`).join('\n')
+        : 'チェックされた項目はありません。';
 
-      latestMessage = `≪敏感者判定テスト≫
+      latestMessage = `≪住まいの感覚チェック≫
 
 【あなたの回答】
 ${selectedText}
 
-【判定結果】
+【チェック数】
+${selectedCount}個
+
+【チェック結果】
 ${resultTitle.textContent}
 
 ${resultDescription.textContent}`;
+    }
+
+    function startCheck() {
+      const selectedItems = getSelectedItems();
+
+      showScreen(loadingScreen);
+
+      window.setTimeout(() => {
+        renderResult(selectedItems);
+        showScreen(resultScreen);
+      }, 900);
     }
 
     async function initLiff() {
@@ -444,7 +412,7 @@ ${resultDescription.textContent}`;
 
     async function sendToLine() {
       if (!latestMessage) {
-        alert('先に判定してください。');
+        alert('先に感覚チェックをしてください。');
         return;
       }
 
@@ -473,45 +441,17 @@ ${resultDescription.textContent}`;
       }
     }
 
-    function startDiagnosis() {
-      const selectedAnswers = getSelectedAnswers();
-
-      if (selectedAnswers.length !== questions.length) {
-        alert('すべての質問に回答してください。');
-        return;
-      }
-
-      showScreen(loadingScreen);
-
-      window.setTimeout(() => {
-        renderResult(selectedAnswers);
-        showScreen(resultScreen);
-      }, 900);
-    }
-
-    function resetDiagnosis() {
-      document.getElementById('sensitiveForm').reset();
-      syncSelectedStyles();
-      selectedAnswerList.innerHTML = '';
-      
-      resultTitle.textContent = '';
-      resultDescription.textContent = '';
-      showScreen(questionScreen);
-    }
-
-    renderQuestions();
+    renderCheckItems();
 
     document.addEventListener('change', (event) => {
-      if (event.target.matches('input[type="radio"]')) {
+      if (event.target.matches('input[name="senseCheck"]')) {
         syncSelectedStyles();
       }
     });
 
-    diagnoseButton.addEventListener('click', startDiagnosis);
+    checkButton.addEventListener('click', startCheck);
     sendButton.addEventListener('click', sendToLine);
     initLiff();
-    
   </script>
-  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
 </body>
 </html>
