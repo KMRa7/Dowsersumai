@@ -177,6 +177,15 @@
       white-space: pre-line;
     }
 
+    .result-description a {
+      display: inline-block;
+      color: #2f8291;
+      font-weight: 700;
+      text-decoration: underline;
+      word-break: break-all;
+      padding: 4px 0;
+    }
+
     .selected-answer-list {
       margin: 0;
       padding-left: 20px;
@@ -301,9 +310,39 @@
 空間との関係性かもしれません。
 
 気になる方は、
-一度しっかり整えてみるのもおすすめです。`;
+一度しっかり整えてみるのもおすすめです。
 
-    const pendingText = `チェックが4つ以下の場合の表示内容は、現在まだ未設定です。`;
+▶️ 場の状態を整える講座／地相鑑定士養成講座
+https://www.j-dowsing.com/e-learning/chisou/`;
+
+    const resultTextForFourOrLess = `今回の結果では、
+
+住まいからの影響を受けている可能性は低いようです。
+
+今の住環境は、
+比較的整った状態なのかもしれませんね。
+
+ただ、
+
+・人の影響を受けやすい
+・理由のない不安や違和感を感じる
+・気分の浮き沈みが気になる
+
+そんなことがあるなら、
+
+住まい以外の影響を受けている可能性があります。
+
+そんな方におすすめなのが、
+
+ヒーリングダウザー養成講座です。
+
+感じる・読み取る・整える。
+
+ダウジングを通して、
+さまざまな影響との向き合い方を学んでいきます🌿
+
+▶️ ヒーリングダウザー養成講座
+https://www.j-dowsing.com/e-learning/medical/`;
 
     const questionScreen = document.getElementById('questionScreen');
     const loadingScreen = document.getElementById('loadingScreen');
@@ -362,13 +401,12 @@
       emptySelectedText.style.display = selectedCount === 0 ? 'block' : 'none';
       countText.textContent = `チェック数：${selectedCount}個`;
 
-      if (selectedCount >= 5) {
-        resultTitle.textContent = 'チェック結果';
-        resultDescription.textContent = resultTextForFiveOrMore;
-      } else {
-        resultTitle.textContent = 'チェック結果は準備中です。';
-        resultDescription.textContent = pendingText;
-      }
+      const rawResultText = selectedCount >= 5
+        ? resultTextForFiveOrMore
+        : resultTextForFourOrLess;
+
+      resultTitle.textContent = 'チェック結果';
+      resultDescription.innerHTML = linkify(rawResultText);
 
       const selectedText = selectedItems.length > 0
         ? selectedItems.map((item) => `・${item}`).join('\n')
@@ -382,7 +420,21 @@ ${selectedText}
 【チェック結果】
 ${resultTitle.textContent}
 
-${resultDescription.textContent}`;
+${rawResultText}`;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function linkify(text) {
+      const escaped = escapeHtml(text);
+      return escaped.replace(/(https?:\/\/[^\s]+)/g, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
     }
 
     function startCheck() {
